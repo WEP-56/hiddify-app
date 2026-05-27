@@ -3,19 +3,19 @@ import 'package:flutter/services.dart';
 
 abstract class Constants {
   static const appName = "WEPBOX";
-  static const githubUrl = "https://github.com/WEP-56/hiddify-app";
+  static const githubUrl = "https://github.com/WEP-56/WEPBOX-Android";
   static const licenseUrl =
-      "https://github.com/WEP-56/hiddify-app/blob/main/LICENSE.md";
+      "https://github.com/WEP-56/WEPBOX-Android/blob/main/LICENSE.md";
   static const githubReleasesApiUrl =
-      "https://api.github.com/repos/WEP-56/hiddify-app/releases";
+      "https://api.github.com/repos/WEP-56/WEPBOX-Android/releases";
   static const githubLatestReleaseUrl =
-      "https://github.com/WEP-56/hiddify-app/releases/latest";
+      "https://github.com/WEP-56/WEPBOX-Android/releases/latest";
   static const appCastUrl =
-      "https://raw.githubusercontent.com/WEP-56/hiddify-app/main/appcast.xml";
-  static const telegramChannelUrl = "https://github.com/WEP-56/hiddify-app";
-  static const privacyPolicyUrl = "https://github.com/WEP-56/hiddify-app";
+      "https://raw.githubusercontent.com/WEP-56/WEPBOX-Android/main/appcast.xml";
+  static const telegramChannelUrl = "https://github.com/WEP-56/WEPBOX-Android";
+  static const privacyPolicyUrl = "https://github.com/WEP-56/WEPBOX-Android";
   static const termsAndConditionsUrl =
-      "https://github.com/WEP-56/hiddify-app/blob/main/LICENSE.md";
+      "https://github.com/WEP-56/WEPBOX-Android/blob/main/LICENSE.md";
   static const cfWarpPrivacyPolicy =
       "https://www.cloudflare.com/application/privacypolicy/";
   static const cfWarpTermsOfService =

@@ -66,18 +66,19 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
     state = await AsyncValue.guard(() async {
       // final activeProfile = await ref.read(activeProfileProvider.future);
       // final markAsActive = activeProfile == null || ref.read(Preferences.markNewProfileActive);
-      final TaskEither<ProfileFailure, Unit> task;
-      if (LinkParser.parse(rawInput) case (final rs)?) {
-        loggy.debug("adding profile, url: [${rs.url}]");
-        task = _profilesRepo.upsertRemote(
-          rs.url,
-          userOverride: rs.name.isNotEmpty ? UserOverride(name: rs.name) : null,
+      final input = LinkParser.parseProfileInput(rawInput);
+      if (input == null) throw const ProfileInvalidUrlFailure();
+      final task = switch (input.kind) {
+        ProfileInputKind.remoteUrl => _profilesRepo.upsertRemote(
+          input.value,
+          userOverride: input.name.isNotEmpty ? UserOverride(name: input.name) : null,
           cancelToken: _cancelToken = CancelToken(),
-        );
-      } else {
-        loggy.debug("adding profile, content");
-        task = _profilesRepo.addLocal(safeDecodeBase64(rawInput));
-      }
+        ),
+        ProfileInputKind.localContent => _profilesRepo.addLocal(
+          input.value,
+          userOverride: input.name.isNotEmpty ? UserOverride(name: input.name) : null,
+        ),
+      };
       return await task
           .match(
             (err) {
@@ -97,7 +98,15 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
     if (state.isLoading) return;
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
-      final task = _profilesRepo.upsertRemote(url, userOverride: userOverride);
+      final input = LinkParser.parseProfileInput(url);
+      if (input == null) throw const ProfileInvalidUrlFailure();
+      final effectiveOverride = input.name.isNotEmpty && (userOverride.name?.isEmpty ?? true)
+          ? userOverride.copyWith(name: input.name)
+          : userOverride;
+      final task = switch (input.kind) {
+        ProfileInputKind.remoteUrl => _profilesRepo.upsertRemote(input.value, userOverride: effectiveOverride),
+        ProfileInputKind.localContent => _profilesRepo.addLocal(input.value, userOverride: effectiveOverride),
+      };
       return await task
           .match(
             (err) {
@@ -106,6 +115,36 @@ class AddProfileNotifier extends _$AddProfileNotifier with AppLogger {
             },
             (r) {
               loggy.info("successfully added profile, mark as active? [true]");
+              return r;
+            },
+          )
+          .run();
+    });
+  }
+
+  Future<void> addBlank() async {
+    if (state.isLoading) return;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      const content = '''
+{
+  "outbounds": [
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ]
+}
+''';
+      return await _profilesRepo
+          .addLocal(content, userOverride: const UserOverride(name: '空白配置'))
+          .match(
+            (err) {
+              loggy.warning("failed to add blank profile", err);
+              throw err;
+            },
+            (r) {
+              loggy.info("successfully added blank profile");
               return r;
             },
           )

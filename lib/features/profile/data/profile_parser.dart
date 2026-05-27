@@ -234,10 +234,12 @@ class ProfileParser {
         if (currentIndex >= lines.length) return;
 
         final line = lines[currentIndex];
+        final trimmedLine = line.trim();
 
         // Non-URL
-        if (!line.startsWith('http://') && !line.startsWith('https://')) {
-          results[currentIndex] = line.trim();
+        if (!trimmedLine.startsWith('http://') &&
+            !trimmedLine.startsWith('https://')) {
+          results[currentIndex] = line;
           continue;
         }
 
@@ -245,7 +247,7 @@ class ProfileParser {
           final tmpPath = '$tempFilePath.$currentIndex';
 
           await httpClient.download(
-            line,
+            trimmedLine,
             tmpPath,
             cancelToken: cancelToken,
             userAgent: ref.read(ConfigOptions.useXrayCoreWhenPossible)

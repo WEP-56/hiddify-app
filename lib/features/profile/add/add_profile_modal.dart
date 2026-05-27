@@ -145,7 +145,6 @@ class AddProfileManual extends HookConsumerWidget {
             child: CustomTextFormField(
               maxLines: 1,
               controller: nameTextController,
-              validator: (value) => (value?.isEmpty ?? true) ? t.pages.profileDetails.form.emptyName : null,
               label: t.common.name,
               hint: t.pages.profileDetails.form.nameHint,
             ),
@@ -154,11 +153,11 @@ class AddProfileManual extends HookConsumerWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: CustomTextFormField(
-              maxLines: 1,
+              maxLines: 4,
               controller: urlTextController,
-              validator: (value) => (value != null && !isUrl(value)) ? t.pages.profileDetails.form.invalidUrl : null,
-              label: t.common.url,
-              hint: t.pages.profileDetails.form.urlHint,
+              validator: (value) => (value?.trim().isEmpty ?? true) ? t.pages.profileDetails.form.invalidUrl : null,
+              label: '订阅或节点',
+              hint: '支持订阅 URL、Clash YAML、Base64、vmess/vless/trojan/hy2 等节点链接',
             ),
           ),
           const Gap(12),
@@ -215,27 +214,38 @@ class AddProfileManual extends HookConsumerWidget {
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16).copyWith(bottom: 8),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
+                SizedBox(
+                  width: double.infinity,
                   child: FilledButton(
-                    child: Text(t.common.add),
                     onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        final i = updateInterval.value.toInt();
-                        final interval = i > 0 ? i : null;
-                        await ref
-                            .read(addProfileNotifierProvider.notifier)
-                            .addManual(
-                              url: urlTextController.text.trim(),
-                              userOverride: UserOverride(
-                                name: nameTextController.text.trim(),
-                                isAutoUpdateDisable: isAutoUpdateDisable.value,
-                                updateInterval: interval,
-                              ),
-                            );
-                      }
+                      if (!formKey.currentState!.validate()) return;
+                      final i = updateInterval.value.toInt();
+                      final interval = i > 0 ? i : null;
+                      await ref
+                          .read(addProfileNotifierProvider.notifier)
+                          .addManual(
+                            url: urlTextController.text.trim(),
+                            userOverride: UserOverride(
+                              name: nameTextController.text.trim(),
+                              isAutoUpdateDisable: isAutoUpdateDisable.value,
+                              updateInterval: interval,
+                            ),
+                          );
                     },
+                    child: Text(t.common.add),
+                  ),
+                ),
+                const Gap(8),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      await ref.read(addProfileNotifierProvider.notifier).addBlank();
+                    },
+                    icon: const Icon(Icons.edit_note_rounded),
+                    label: const Text('创建空白配置'),
                   ),
                 ),
               ],
