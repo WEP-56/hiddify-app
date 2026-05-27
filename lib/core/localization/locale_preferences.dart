@@ -9,14 +9,17 @@ part 'locale_preferences.g.dart';
 class LocalePreferences extends _$LocalePreferences with AppLogger {
   @override
   AppLocale build() {
-    final persisted = ref.watch(sharedPreferencesProvider).requireValue.getString("locale");
-    if (persisted == null) return AppLocaleUtils.findDeviceLocale();
+    final persisted = ref
+        .watch(sharedPreferencesProvider)
+        .requireValue
+        .getString("locale");
+    if (persisted == null) return _deviceLocale();
     // keep backward compatibility with chinese after changing zh to zh_CN
     if (persisted == "zh") {
       return AppLocale.zhCn;
     }
     try {
-      return AppLocale.values.byName(persisted);
+      return _supportedLocale(AppLocale.values.byName(persisted));
     } catch (e) {
       loggy.error("error setting locale: [$persisted]", e);
       return AppLocale.en;
@@ -24,7 +27,21 @@ class LocalePreferences extends _$LocalePreferences with AppLogger {
   }
 
   Future<void> changeLocale(AppLocale value) async {
-    state = value;
-    await ref.read(sharedPreferencesProvider).requireValue.setString("locale", value.name);
+    final locale = _supportedLocale(value);
+    state = locale;
+    await ref
+        .read(sharedPreferencesProvider)
+        .requireValue
+        .setString("locale", locale.name);
   }
+
+  AppLocale _deviceLocale() {
+    final locale = AppLocaleUtils.findDeviceLocale();
+    return _supportedLocale(locale);
+  }
+
+  AppLocale _supportedLocale(AppLocale locale) => switch (locale) {
+    AppLocale.zhCn => AppLocale.zhCn,
+    _ => AppLocale.en,
+  };
 }

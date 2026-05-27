@@ -114,8 +114,6 @@ jobs:
         run: make ${{ matrix.platform }}-prepare
 
       - name: Build Android
-        env:
-          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
         run: make ${{ matrix.platform }}-release
 
       - name: Copy APK outputs

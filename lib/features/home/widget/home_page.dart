@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:hiddify/features/connection/model/connection_status.dart';
+import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/home/widget/connection_button.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_card.dart';
@@ -19,6 +21,15 @@ class HomePage extends HookConsumerWidget {
         ref.watch(statsNotifierProvider).asData?.value ?? SystemInfo.create();
     final activeProfile = ref.watch(activeProfileProvider).valueOrNull;
     final activeProxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
+    final connectionStatus = ref.watch(connectionNotifierProvider);
+    final coreStatus = switch (connectionStatus) {
+      AsyncData(value: Disconnected()) => '停止',
+      AsyncData(value: Connecting()) => '启动中',
+      AsyncData(value: Connected()) => '运行中',
+      AsyncData(value: Disconnecting()) => '停止中',
+      AsyncError() => '异常',
+      _ => '检查中',
+    };
 
     return Scaffold(
       body: SafeArea(
@@ -46,7 +57,7 @@ class HomePage extends HookConsumerWidget {
             ),
             const Gap(8),
             Text(
-              'Sing-box Tun 内核 v1.8 · 开源免费',
+              'Sing-box Tun 内核 · $coreStatus',
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontFamily: 'monospace',
               ),

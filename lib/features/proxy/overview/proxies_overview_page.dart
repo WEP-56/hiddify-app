@@ -114,7 +114,7 @@ class _ProxyHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '节点节点',
+          '节点',
           style: theme.textTheme.displaySmall?.copyWith(
             fontFamily: 'serif',
             fontWeight: FontWeight.w300,
@@ -125,7 +125,7 @@ class _ProxyHeader extends StatelessWidget {
         Row(
           children: [
             Text(
-              '请选择接入基站',
+              '请选择接入节点',
               style: theme.textTheme.labelMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -138,7 +138,7 @@ class _ProxyHeader extends StatelessWidget {
                 minimumSize: const Size(64, 36),
                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              child: const Text('延迟整备'),
+              child: const Text('延迟测试'),
             ),
             PopupMenuButton<ProxiesSort>(
               initialValue: sortBy,

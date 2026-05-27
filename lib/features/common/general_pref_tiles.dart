@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hiddify/core/analytics/analytics_controller.dart';
 import 'package:hiddify/core/localization/locale_extensions.dart';
 import 'package:hiddify/core/localization/locale_preferences.dart';
 import 'package:hiddify/core/localization/translations.dart';
@@ -27,42 +26,16 @@ class LocalePrefTile extends ConsumerWidget {
             .showSettingPicker<AppLocale>(
               title: t.pages.settings.general.locale,
               selected: locale,
-              onReset: () => ref.read(localePreferencesProvider.notifier).changeLocale(AppLocale.en),
-              options: AppLocale.values,
+              onReset: () => ref
+                  .read(localePreferencesProvider.notifier)
+                  .changeLocale(AppLocale.en),
+              options: const [AppLocale.zhCn, AppLocale.en],
               getTitle: (e) => e.localeName,
             );
         if (selectedLocale != null) {
-          await ref.read(localePreferencesProvider.notifier).changeLocale(selectedLocale);
-        }
-      },
-    );
-  }
-}
-
-class EnableAnalyticsPrefTile extends ConsumerWidget {
-  const EnableAnalyticsPrefTile({super.key, this.onChanged});
-
-  final ValueChanged<bool>? onChanged;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final t = ref.watch(translationsProvider).requireValue;
-
-    final enabled = ref.watch(analyticsControllerProvider).requireValue;
-
-    return SwitchListTile.adaptive(
-      title: Text(t.pages.settings.general.enableAnalytics),
-      subtitle: Text(t.pages.settings.general.enableAnalyticsMsg, style: Theme.of(context).textTheme.bodySmall),
-      secondary: const Icon(Icons.analytics_rounded),
-      value: enabled,
-      onChanged: (value) async {
-        if (onChanged != null) {
-          return onChanged!(value);
-        }
-        if (enabled) {
-          await ref.read(analyticsControllerProvider.notifier).disableAnalytics();
-        } else {
-          await ref.read(analyticsControllerProvider.notifier).enableAnalytics();
+          await ref
+              .read(localePreferencesProvider.notifier)
+              .changeLocale(selectedLocale);
         }
       },
     );
@@ -93,12 +66,16 @@ class ThemeModePrefTile extends ConsumerWidget {
             .showSettingPicker<AppThemeMode>(
               title: t.pages.settings.general.themeMode,
               selected: themeMode,
-              onReset: () => ref.read(themePreferencesProvider.notifier).changeThemeMode(AppThemeMode.system),
+              onReset: () => ref
+                  .read(themePreferencesProvider.notifier)
+                  .changeThemeMode(AppThemeMode.system),
               options: AppThemeMode.values,
               getTitle: (e) => e.present(t),
             );
         if (selectedThemeMode != null) {
-          await ref.read(themePreferencesProvider.notifier).changeThemeMode(selectedThemeMode);
+          await ref
+              .read(themePreferencesProvider.notifier)
+              .changeThemeMode(selectedThemeMode);
         }
       },
     );
@@ -119,9 +96,13 @@ class ClosingPrefTile extends ConsumerWidget {
       subtitle: Text(action.present(t)),
       leading: const Icon(Icons.logout_rounded),
       onTap: () async {
-        final selectedAction = await ref.read(dialogNotifierProvider.notifier).showActionAtClosing(selected: action);
+        final selectedAction = await ref
+            .read(dialogNotifierProvider.notifier)
+            .showActionAtClosing(selected: action);
         if (selectedAction != null) {
-          await ref.read(Preferences.actionAtClose.notifier).update(selectedAction);
+          await ref
+              .read(Preferences.actionAtClose.notifier)
+              .update(selectedAction);
         }
       },
     );

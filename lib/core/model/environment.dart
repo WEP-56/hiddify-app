@@ -4,7 +4,6 @@ enum Environment {
   prod,
   dev;
 
-  static const sentryDSN = String.fromEnvironment("sentry_dsn");
   // This environment variable is set in the 'windows-release-zip' command
   static const isPortable = bool.fromEnvironment("portable");
 }
@@ -21,5 +20,8 @@ enum Release {
   bool get allowCustomUpdateChecker => this == general;
 
   static Release read() =>
-      Release.values.firstOrNullWhere((e) => e.key == const String.fromEnvironment("release")) ?? Release.general;
+      Release.values.firstOrNullWhere(
+        (e) => e.key == const String.fromEnvironment("release"),
+      ) ??
+      Release.general;
 }

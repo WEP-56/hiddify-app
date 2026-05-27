@@ -27,49 +27,43 @@ class SettingsPage extends HookConsumerWidget {
               ),
             ),
             const SizedBox(height: 32),
-            _SectionLabel('分流路由系统'),
+            _SectionLabel('基础'),
             SettingsSection(
-              title: '路由模式选择',
-              subtitle: '绕过中国大陆地区 (Geosite 规则驱动)',
-              icon: Icons.route_rounded,
-              checked: false,
+              title: '通用偏好',
+              subtitle: '语言、主题、通知、日志与连接测试',
+              icon: Icons.tune_rounded,
               namedLocation: context.namedLocation('general'),
             ),
             SettingsSection(
-              title: 'TUN 虚拟网卡模式',
-              subtitle: '接管整机网络流量，实现无缝透明代理',
-              icon: Icons.check_circle_rounded,
-              checked: true,
-              namedLocation: context.namedLocation('routeOptions'),
+              title: '入站与 TUN',
+              subtitle: 'VPN/TUN、系统代理与本地端口',
+              icon: Icons.input_rounded,
+              namedLocation: context.namedLocation('inboundOptions'),
             ),
             const SizedBox(height: 26),
-            _SectionLabel('高级策略'),
+            _SectionLabel('网络策略'),
             SettingsSection(
-              title: '安全 DNS 规则',
-              subtitle: 'Sing-box 智能防污染 DNS (QUIC 优先)',
+              title: '路由规则',
+              subtitle: '分流地区、广告拦截、IPv6 与应用代理',
+              icon: Icons.route_rounded,
+              namedLocation: context.namedLocation('routeOptions'),
+            ),
+            SettingsSection(
+              title: 'DNS 规则',
+              subtitle: '远程 DNS、直连 DNS、FakeDNS',
               icon: Icons.dns_rounded,
-              checked: false,
               namedLocation: context.namedLocation('dnsOptions'),
             ),
             SettingsSection(
-              title: t.pages.settings.inbound.title,
-              subtitle: '代理入口与本地端口',
-              icon: Icons.input_rounded,
-              checked: false,
-              namedLocation: context.namedLocation('inboundOptions'),
-            ),
-            SettingsSection(
               title: t.pages.settings.tlsTricks.title,
-              subtitle: 'TLS 分片与握手细节',
+              subtitle: 'TLS 分片、SNI 与 Padding',
               icon: Icons.content_cut_rounded,
-              checked: false,
               namedLocation: context.namedLocation('tlsTricks'),
             ),
             SettingsSection(
               title: t.pages.settings.warp.title,
               subtitle: 'Cloudflare WARP 出站策略',
               icon: Icons.cloud_rounded,
-              checked: false,
               namedLocation: context.namedLocation('warpOptions'),
             ),
             if (PlatformUtils.isIOS)
@@ -83,18 +77,18 @@ class SettingsPage extends HookConsumerWidget {
                 ),
               ),
             if (Breakpoint(context).isMobile()) ...[
+              const SizedBox(height: 26),
+              _SectionLabel('维护'),
               SettingsSection(
                 title: t.pages.logs.title,
                 subtitle: '查看运行日志',
                 icon: Icons.description_rounded,
-                checked: false,
                 namedLocation: context.namedLocation('logs'),
               ),
               SettingsSection(
                 title: t.pages.about.title,
                 subtitle: '版本、许可与开源信息',
                 icon: Icons.info_rounded,
-                checked: false,
                 namedLocation: context.namedLocation('about'),
               ),
             ],
@@ -112,14 +106,12 @@ class SettingsSection extends HookConsumerWidget {
     required this.icon,
     required this.namedLocation,
     this.subtitle,
-    this.checked = false,
   });
 
   final String title;
   final String? subtitle;
   final IconData icon;
   final String namedLocation;
-  final bool checked;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -135,6 +127,8 @@ class SettingsSection extends HookConsumerWidget {
         ),
         child: Row(
           children: [
+            Icon(icon, size: 22, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,13 +148,10 @@ class SettingsSection extends HookConsumerWidget {
                 ],
               ),
             ),
-            if (checked)
-              Icon(icon, color: theme.colorScheme.primary)
-            else
-              Icon(
-                Icons.chevron_right_rounded,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

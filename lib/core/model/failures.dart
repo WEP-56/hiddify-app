@@ -18,7 +18,7 @@ mixin UnexpectedFailure {
 /// and should be logged, eg missing permissions
 mixin ExpectedMeasuredFailure {}
 
-/// failures ignored by analytics service etc.
+/// failures that are expected and can be handled without escalation.
 mixin ExpectedFailure {}
 
 extension ErrorPresenter on TranslationsEn {
@@ -33,7 +33,10 @@ extension ErrorPresenter on TranslationsEn {
   PresentableError presentError(Object error, {String? action}) {
     final pair = errorToPair(error);
     if (action == null) return pair;
-    return (type: action, message: pair.type + (pair.message == null ? "" : "\n${pair.message!}"));
+    return (
+      type: action,
+      message: pair.type + (pair.message == null ? "" : "\n${pair.message!}"),
+    );
   }
 
   String presentShortError(Object error, {String? action}) {
@@ -47,10 +50,22 @@ extension DioExceptionPresenter on DioException {
   PresentableError present(TranslationsEn t) => switch (type) {
     DioExceptionType.connectionTimeout ||
     DioExceptionType.sendTimeout ||
-    DioExceptionType.receiveTimeout => (type: t.errors.connection.timeout, message: null),
-    DioExceptionType.badCertificate => (type: t.errors.connection.badCertificate, message: message),
-    DioExceptionType.badResponse => (type: t.errors.connection.badResponse, message: message),
-    DioExceptionType.connectionError => (type: t.errors.connection.connectionError, message: message),
+    DioExceptionType.receiveTimeout => (
+      type: t.errors.connection.timeout,
+      message: null,
+    ),
+    DioExceptionType.badCertificate => (
+      type: t.errors.connection.badCertificate,
+      message: message,
+    ),
+    DioExceptionType.badResponse => (
+      type: t.errors.connection.badResponse,
+      message: message,
+    ),
+    DioExceptionType.connectionError => (
+      type: t.errors.connection.connectionError,
+      message: message,
+    ),
     _ => (type: t.errors.connection.unexpected, message: message),
   };
 }

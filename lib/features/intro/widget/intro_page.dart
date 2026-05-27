@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
-import 'package:hiddify/core/analytics/analytics_controller.dart';
 import 'package:hiddify/core/http_client/dio_http_client.dart';
 import 'package:hiddify/core/localization/locale_preferences.dart';
 import 'package:hiddify/core/localization/translations.dart';
@@ -51,12 +50,10 @@ class IntroPage extends HookConsumerWidget with PresLogger {
 
     // for focus management
     final focusStates = <String, ValueNotifier<bool>>{
-      IntroConst.termsAndConditionsKey: useState<bool>(false),
       IntroConst.githubKey: useState<bool>(false),
       IntroConst.licenseKey: useState<bool>(false),
     };
     final focusNodes = <String, FocusNode>{
-      IntroConst.termsAndConditionsKey: useFocusNode(),
       IntroConst.githubKey: useFocusNode(),
       IntroConst.licenseKey: useFocusNode(),
     };
@@ -118,37 +115,7 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                           .reset();
                     },
                   ),
-                  const EnableAnalyticsPrefTile(),
                   const Gap(24),
-                  Focus(
-                    focusNode: focusNodes[IntroConst.termsAndConditionsKey],
-                    onKeyEvent: (node, event) => _handleKeyEvent(
-                      event,
-                      IntroConst.termsAndConditionsKey,
-                    ),
-                    child: Text.rich(
-                      t.intro.termsAndPolicyCaution(
-                        tap: (text) => TextSpan(
-                          text: text,
-                          style: TextStyle(
-                            color:
-                                focusStates[IntroConst.termsAndConditionsKey]!
-                                    .value
-                                ? Colors.green
-                                : Colors.blue,
-                          ),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () async {
-                              await UriUtils.tryLaunch(
-                                Uri.parse(Constants.termsAndConditionsUrl),
-                              );
-                            },
-                        ),
-                      ),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ),
-                  const Gap(8),
                   Focus(
                     focusNode: focusNodes[IntroConst.githubKey],
                     onKeyEvent: (node, event) =>
@@ -212,16 +179,6 @@ class IntroPage extends HookConsumerWidget with PresLogger {
         onPressed: () async {
           if (isStarting.value) return;
           isStarting.value = true;
-          if (!ref.read(analyticsControllerProvider).requireValue) {
-            loggy.info("disabling analytics per user request");
-            try {
-              await ref
-                  .read(analyticsControllerProvider.notifier)
-                  .disableAnalytics();
-            } catch (error, stackTrace) {
-              loggy.error("could not disable analytics", error, stackTrace);
-            }
-          }
           await ref.read(Preferences.introCompleted.notifier).update(true);
         },
       ),
@@ -284,18 +241,8 @@ class IntroPage extends HookConsumerWidget with PresLogger {
 
   RegionLocale _getRegionLocale(String country) {
     switch (country.toUpperCase()) {
-      case "IR":
-        return RegionLocale(Region.ir, AppLocale.fa);
       case "CN":
         return RegionLocale(Region.cn, AppLocale.zhCn);
-      case "RU":
-        return RegionLocale(Region.ru, AppLocale.ru);
-      case "AF":
-        return RegionLocale(Region.af, AppLocale.fa);
-      case "BR":
-        return RegionLocale(Region.br, AppLocale.ptBr);
-      case "TR":
-        return RegionLocale(Region.tr, AppLocale.tr);
       default:
         return RegionLocale(Region.other, AppLocale.en);
     }

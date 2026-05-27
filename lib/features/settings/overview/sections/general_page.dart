@@ -25,7 +25,6 @@ class GeneralPage extends HookConsumerWidget {
         children: [
           const LocalePrefTile(),
           const ThemeModePrefTile(),
-          const EnableAnalyticsPrefTile(),
           SwitchListTile.adaptive(
             title: Text(t.pages.settings.general.autoIpCheck),
             value: ref.watch(Preferences.autoCheckIp),
@@ -37,13 +36,17 @@ class GeneralPage extends HookConsumerWidget {
               title: Text(t.pages.settings.general.dynamicNotification),
               secondary: const Icon(Icons.speed_rounded),
               value: ref.watch(Preferences.dynamicNotification),
-              onChanged: ref.read(Preferences.dynamicNotification.notifier).update,
+              onChanged: ref
+                  .read(Preferences.dynamicNotification.notifier)
+                  .update,
             ),
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.hapticFeedback),
               secondary: const Icon(Icons.vibration_rounded),
               value: ref.watch(hapticServiceProvider),
-              onChanged: ref.read(hapticServiceProvider.notifier).updatePreference,
+              onChanged: ref
+                  .read(hapticServiceProvider.notifier)
+                  .updatePreference,
             ),
           ],
           if (PlatformUtils.isDesktop) ...[
@@ -54,7 +57,9 @@ class GeneralPage extends HookConsumerWidget {
               value: ref.watch(autoStartNotifierProvider).asData!.value,
               onChanged: (value) async => value
                   ? await ref.read(autoStartNotifierProvider.notifier).enable()
-                  : await ref.read(autoStartNotifierProvider.notifier).disable(),
+                  : await ref
+                        .read(autoStartNotifierProvider.notifier)
+                        .disable(),
             ),
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.silentStart),
@@ -69,17 +74,22 @@ class GeneralPage extends HookConsumerWidget {
             subtitle: Text(t.pages.settings.general.memoryLimitMsg),
             secondary: const Icon(Icons.memory_rounded),
             value: !ref.watch(Preferences.disableMemoryLimit),
-            onChanged: (value) async => await ref.read(Preferences.disableMemoryLimit.notifier).update(!value),
+            onChanged: (value) async => await ref
+                .read(Preferences.disableMemoryLimit.notifier)
+                .update(!value),
           ),
           SwitchListTile.adaptive(
             title: Text(t.pages.settings.general.debugMode),
-            secondary: const Icon(Icons.bug_report_rounded),
+            secondary: const Icon(Icons.terminal_rounded),
             value: ref.watch(debugModeNotifierProvider),
             onChanged: (value) async {
               if (value)
                 await ref
                     .read(dialogNotifierProvider.notifier)
-                    .showOk(t.pages.settings.general.debugMode, t.pages.settings.general.debugModeMsg);
+                    .showOk(
+                      t.pages.settings.general.debugMode,
+                      t.pages.settings.general.debugModeMsg,
+                    );
               await ref.read(debugModeNotifierProvider.notifier).update(value);
             },
           ),
@@ -99,22 +109,36 @@ class GeneralPage extends HookConsumerWidget {
           ),
           ListTile(
             title: Text(t.pages.settings.general.urlTestInterval),
-            subtitle: Text(ref.watch(ConfigOptions.urlTestInterval).toApproximateTime(isRelativeToNow: false)),
+            subtitle: Text(
+              ref
+                  .watch(ConfigOptions.urlTestInterval)
+                  .toApproximateTime(isRelativeToNow: false),
+            ),
             leading: const Icon(Icons.timer_rounded),
             onTap: () async => await ref
                 .read(dialogNotifierProvider.notifier)
                 .showSettingSlider(
                   title: t.pages.settings.general.urlTestInterval,
-                  initialValue: ref.watch(ConfigOptions.urlTestInterval).inMinutes.coerceIn(0, 60).toDouble(),
-                  onReset: ref.read(ConfigOptions.urlTestInterval.notifier).reset,
+                  initialValue: ref
+                      .watch(ConfigOptions.urlTestInterval)
+                      .inMinutes
+                      .coerceIn(0, 60)
+                      .toDouble(),
+                  onReset: ref
+                      .read(ConfigOptions.urlTestInterval.notifier)
+                      .reset,
                   min: 1,
                   max: 60,
                   divisions: 60,
-                  labelGen: (value) => Duration(minutes: value.toInt()).toApproximateTime(isRelativeToNow: false),
+                  labelGen: (value) => Duration(
+                    minutes: value.toInt(),
+                  ).toApproximateTime(isRelativeToNow: false),
                 )
                 .then((value) async {
                   if (value == null) return;
-                  await ref.read(ConfigOptions.urlTestInterval.notifier).update(Duration(minutes: value.toInt()));
+                  await ref
+                      .read(ConfigOptions.urlTestInterval.notifier)
+                      .update(Duration(minutes: value.toInt()));
                 }),
           ),
           ValuePreferenceWidget(
@@ -131,7 +155,9 @@ class GeneralPage extends HookConsumerWidget {
             subtitle: Text(t.pages.settings.general.useXrayCoreWhenPossibleMsg),
             secondary: const Icon(Icons.extension_rounded),
             value: ref.watch(ConfigOptions.useXrayCoreWhenPossible),
-            onChanged: ref.read(ConfigOptions.useXrayCoreWhenPossible.notifier).update,
+            onChanged: ref
+                .read(ConfigOptions.useXrayCoreWhenPossible.notifier)
+                .update,
           ),
         ],
       ),
