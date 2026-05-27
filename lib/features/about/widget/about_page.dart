@@ -2,6 +2,7 @@ import 'package:fluentui_system_icons/fluentui_system_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hiddify/core/app_info/app_info_provider.dart';
 import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/model/constants.dart';
@@ -47,13 +48,31 @@ class AboutPage extends HookConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(24, 22, 24, 112),
           children: [
-            Text(
-              '关于 WEPBOX',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontFamily: 'serif',
-                fontWeight: FontWeight.w300,
-                letterSpacing: 2,
-              ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/settings');
+                    }
+                  },
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                ),
+                const Gap(8),
+                Expanded(
+                  child: Text(
+                    '关于 WEPBOX',
+                    style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                      fontFamily: 'serif',
+                      fontWeight: FontWeight.w300,
+                      letterSpacing: 2,
+                    ),
+                  ),
+                ),
+              ],
             ),
             const Gap(28),
             Row(

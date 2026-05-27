@@ -20,9 +20,11 @@ class AppInfoEntity with _$AppInfoEntity {
   String get userAgent =>
       "WEPBOX/$version ($operatingSystem) like ClashMeta v2ray sing-box";
 
+  String get releaseTag => "v$version-wep";
+
   String get presentVersion => environment == Environment.prod
-      ? version
-      : "$version ${environment.name}";
+      ? releaseTag
+      : "$releaseTag ${environment.name}";
 
   /// formats app info for sharing
   String format() =>
